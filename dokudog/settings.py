@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'dokudog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dokudog_main',
+        'USER': 'dd_main',
+        'PASSWORD': 'dokudogpassword',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
