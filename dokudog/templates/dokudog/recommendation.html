@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Get a Recommendation</h2>
+
+  {% if recommendation %}
+    <h3>Your Recommendation:</h3>
+    <p><strong>Title:</strong> {{ recommendation.title }}</p>
+    <p><strong>Author:</strong> {{ recommendation.author }}</p>
+    <p><strong>Difficulty:</strong> {{ recommendation.difficulty }}</p>
+  {% elif error %}
+    <p style="color: red;">{{ error }}</p>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Get Recommendation</button>
+  </form>
+{% endblock %}
