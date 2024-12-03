@@ -28,9 +28,10 @@ class Type(models.Model):
 class Work(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
-    difficulty = models.IntegerField()
+    difficulty = models.FloatField()
     themes = models.ManyToManyField(Theme, related_name="works")
-    type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, related_name='type')
+    type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, related_name='works')
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, related_name='works')
     # Additional fields as needed
 
     def __str__(self):
@@ -40,8 +41,8 @@ class Work(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     difficulty_score = models.FloatField(default=0.5)
-    native_language = models.CharField(max_length=50)
-    target_language = models.CharField(max_length=50)
+    native_language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, related_name='native_users')
+    target_language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, related_name='target_users')
     themes = models.ManyToManyField(Theme)
 
     def __str__(self):
