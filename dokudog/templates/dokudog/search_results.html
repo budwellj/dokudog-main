@@ -1,94 +1,97 @@
 {% extends 'base.html' %}
+    {% block content %}
+    <div style="align-content: normal;">
+    <form action="{% url 'search_results' %}" method="get" class="search-form">
+        <input type="text" name="q" placeholder="Enter book name..." value="{{ query }}" aria-label="Search books">
 
-{% block content %}
-<form action="{% url 'search_results' %}" method="get" class="search-form">
-    <input type="text" name="q" placeholder="Enter book name..." value="{{ query }}" aria-label="Search books">
+        <!-- Sorting Dropdown -->
+        <select name="sort_by">
+            <option value="">Sort By</option>
+            <option value="difficulty_asc" {% if sort_by == 'difficulty_asc' %}selected{% endif %}>Difficulty: Low to High</option>
+            <option value="difficulty_desc" {% if sort_by == 'difficulty_desc' %}selected{% endif %}>Difficulty: High to Low</option>
+        </select>
 
-    <!-- Sorting Dropdown -->
-    <select name="sort_by">
-        <option value="">Sort By</option>
-        <option value="difficulty_asc" {% if sort_by == 'difficulty_asc' %}selected{% endif %}>Difficulty: Low to High</option>
-        <option value="difficulty_desc" {% if sort_by == 'difficulty_desc' %}selected{% endif %}>Difficulty: High to Low</option>
-    </select>
+        <!-- Language Filter -->
+        <select name="language">
+            <option value="">All Languages</option>
+            {% for language in languages %}
+                <option value="{{ language.id }}" {% if language.id == selected_language %}selected{% endif %}>{{ language.name }}</option>
+            {% endfor %}
+        </select>
 
-    <!-- Language Filter -->
-    <select name="language">
-        <option value="">All Languages</option>
-        {% for language in languages %}
-            <option value="{{ language.id }}" {% if language.id == selected_language %}selected{% endif %}>{{ language.name }}</option>
-        {% endfor %}
-    </select>
+        <!-- Theme Filters -->
+        <div class="themes-filter">
+            <label>Themes:</label><br>
+            {% for theme in themes %}
+                <label>
+                    <input type="checkbox" name="themes" value="{{ theme.id }}" {% if theme.id in selected_themes %}checked{% endif %}>
+                    {{ theme.name }}
+                </label>
+            {% endfor %}
+        </div>
 
-    <!-- Theme Filters -->
-    <div class="themes-filter">
-        <label>Themes:</label><br>
-        {% for theme in themes %}
-            <label>
-                <input type="checkbox" name="themes" value="{{ theme.id }}" {% if theme.id in selected_themes %}checked{% endif %}>
-                {{ theme.name }}
-            </label>
-        {% endfor %}
+        <button type="submit">Search</button>
+    </form>
+    <div style="display: flex;/* align-self: center; */flex-direction: row;justify-content: space-evenly;align-items: center;">
+        <h2>Search Results for "{{ query }}"</h2>
+        {% if page_obj %}
+            <p> results {{ page_obj.start_index }} - {{ page_obj.end_index }} of {{ page_obj.paginator.count }}</p>
+        {% endif %}
+    </div>
+    <div id="search-results">
+        {% if page_obj %}
+            <div class="results-grid">
+                {% for work in page_obj %}
+                <div class="result-card">                    
+                    <img src="{{ work.cover_url }}" alt="Cover of {{ work.title }}" class="cover-image">
+                    <h3>{{ work.title }}</h3>
+                    <p><strong>Author:</strong> {{ work.author }}</p>
+                    {% if work.amazon_link %}
+                        <p><a href="{{ work.amazon_link }}" target="_blank" class="buy-link">Buy/Read</a></p>
+                    {% else %}
+                        <p>No purchase link available</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                </div>
+                <!-- Pagination controls -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">First</a>
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+
+                    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Next</a>
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}">Last</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% else %}
+            <p>No results found.</p>
+            <button id="open-modal-button">Add a New Work</button>
+        {% endif %}
     </div>
 
-    <button type="submit">Search</button>
-</form>
-<h2>Search Results for "{{ query }}"</h2>
-{% if page_obj %}
-    <p> results {{ page_obj.start_index }} - {{ page_obj.end_index }} of {{ page_obj.paginator.count }}</p>
-{% endif %}
-<div id="search-results">
-    {% if page_obj %}
-        <div class="results-grid">
-            {% for work in page_obj %}
-            <div class="result-card">                    
-                <img src="{{ work.cover_url }}" alt="Cover of {{ work.title }}" class="cover-image">
-                <h3>{{ work.title }}</h3>
-                <p><strong>Author:</strong> {{ work.author }}</p>
-                {% if work.amazon_link %}
-                    <p><a href="{{ work.amazon_link }}" target="_blank" class="buy-link">Buy/Read</a></p>
-                {% else %}
-                    <p>No purchase link available</p>
+    <!-- Modal for adding a new work -->
+    <div id="add-work-modal" class="modal" {% if form.errors %}style="display: block;"{% endif %}>
+        <div class="modal-content">
+            <span class="close-button" id="close-modal-button">&times;</span>
+            <h3>Add a New Work</h3>
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ form.as_p }}
+                {% if form.errors %}
+                    <div class="form-errors">
+                        {{ form.errors }}
+                    </div>
                 {% endif %}
-            </div>
-            {% endfor %}
-            </div>
-            <!-- Pagination controls -->
-        <div class="pagination">
-            <span class="step-links">
-                {% if page_obj.has_previous %}
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">First</a>
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">Previous</a>
-                {% endif %}
-
-                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-
-                {% if page_obj.has_next %}
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Next</a>
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}">Last</a>
-                {% endif %}
-            </span>
+                <button type="submit">Submit</button>
+            </form>
         </div>
-    {% else %}
-        <p>No results found.</p>
-        <button id="open-modal-button">Add a New Work</button>
-    {% endif %}
-</div>
-
-<!-- Modal for adding a new work -->
-<div id="add-work-modal" class="modal" {% if form.errors %}style="display: block;"{% endif %}>
-    <div class="modal-content">
-        <span class="close-button" id="close-modal-button">&times;</span>
-        <h3>Add a New Work</h3>
-        <form method="post" action="">
-            {% csrf_token %}
-            {{ form.as_p }}
-            {% if form.errors %}
-                <div class="form-errors">
-                    {{ form.errors }}
-                </div>
-            {% endif %}
-            <button type="submit">Submit</button>
-        </form>
     </div>
 </div>
 {% endblock %}

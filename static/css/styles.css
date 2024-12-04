@@ -215,10 +215,11 @@ footer {
 /* Results Grid Styling */
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible grid to accommodate up to 4 items */
     gap: 1rem;
     margin-top: 1rem;
 }
+
 
 /* Result Card Styling */
 .result-card {
@@ -485,4 +486,24 @@ footer {
 
 .themes-filter label {
     margin-right: 10px;
+}
+
+/* Title with Mascot Styling */
+.title-with-mascot {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between title and mascot */
+}
+
+.title-with-mascot h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.mascot-image {
+    width: 50px;  /* Adjust size as needed */
+    height: auto;
+    object-fit: contain;
+    border-radius: 50%;  /* Optional: round the mascot image */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add subtle shadow */
 }
