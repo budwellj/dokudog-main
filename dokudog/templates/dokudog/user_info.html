@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>User Information</h2>
+
+<div>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    {% if profile %}
+        <p><strong>Native Language:</strong> {{ profile.native_language.name }}</p>
+        <p><strong>Target Language:</strong> {{ profile.target_language.name }}</p>
+        <p><strong>Difficulty Score:</strong> {{ profile.difficulty_score }}</p>
+        <p><strong>Preferred Themes:</strong>
+            {% for theme in profile.themes.all %}
+                {{ theme.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    {% else %}
+        <p>You do not have a profile set up yet.</p>
+    {% endif %}
+</div>
+
+<a href="{% url 'user-settings' %}">Edit Settings</a>
+{% endblock %}

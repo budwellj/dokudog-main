@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+<div class="homepage-container">
+    <div class="welcome-section">
+        {% if user.is_authenticated %}
+            <h2>Welcome back, {{ user.username|capfirst }}!</h2>
+        {% else %}
+            <h2>Welcome to Dokudog!</h2>
+        {% endif %}
+        <p>
+            Tadoku, or "extensive reading," is a method to improve your language skills by reading a lot of material
+            that is easy to understand. The goal is to enjoy the process of reading without constantly stopping to look
+            up words or grammar. Dokudog is here to guide you on this journey with personalized recommendations.
+        </p>
+    </div>
+    <div class="current-work-section">
+        <h3>Your Current Work</h3>
+        {% if user_work %}
+            <div class="current-work-card">
+                <img src="{{ user_work.cover_url }}" alt="Cover of {{ user_work.title }}" class="current-work-cover">
+                <div class="current-work-details">
+                    <p><strong>Title:</strong> {{ user_work.title }}</p>
+                    <p><strong>Author:</strong> {{ user_work.author }}</p>
+                    <p><strong>Difficulty:</strong> {{ user_work.difficulty }}</p>
+                    {% if user_work.buy_link %}
+                        <a href="{{ user_work.buy_link }}" class="buy-link" target="_blank">Buy/Read</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <p>You haven't selected a work yet. Get started by requesting a recommendation!</p>
+            <a href="{% url 'get_recommendation_view' %}">Get Recommendation</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -17,13 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from api.urls import path, include
-from api.views import get_recommendation_view
+from api.views import get_recommendation_view, user_info_view, edit_user_settings, homepage_view, add_work_view, search_results
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    path('', homepage_view, name='homepage'),
     path('admin/', admin.site.urls),
     #path('api/', include('api.urls')),
     path('login/', auth_views.LoginView.as_view(template_name='dokudog/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='dokudog/logout.html'), name='logout'),
     path('recommendation/', get_recommendation_view, name='get_recommendation_view'),
+    path('user-info/',user_info_view, name='user-info'),
+    path('user-settings/', edit_user_settings, name='user-settings'),
+    path('add-work/', add_work_view, name='add_work'),
+    path('search-results/', search_results, name='search_results'),
 ]

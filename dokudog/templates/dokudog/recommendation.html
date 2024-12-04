@@ -1,19 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="centered-container">
   <h2>Get a Recommendation</h2>
 
-  {% if recommendation %}
-    <h3>Your Recommendation:</h3>
-    <p><strong>Title:</strong> {{ recommendation.title }}</p>
-    <p><strong>Author:</strong> {{ recommendation.author }}</p>
-    <p><strong>Difficulty:</strong> {{ recommendation.difficulty }}</p>
-  {% elif error %}
-    <p style="color: red;">{{ error }}</p>
-  {% endif %}
-
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit">Get Recommendation</button>
-  </form>
+  
+    <div class="recommendation-container">
+        {% if recommendation %}
+        <div class="recommendation-card">
+            <div class="cover-section">
+                <img src="{{ recommendation.cover_url }}" alt="Cover of {{ recommendation.title }}" class="cover-image">
+            </div>
+            <div class="details-section">
+                <h3>{{ recommendation.title }}</h3>
+                <p><strong>Author:</strong> {{ recommendation.author }}</p>
+                <p><strong>Difficulty:</strong> {{ recommendation.difficulty }}</p>
+            </div>
+            {% if recommendation.amazon_link %}
+                <a href="{{ recommendation.amazon_link }}" class="buy-link" target="_blank">Buy/Read</a>
+            {% else %}
+                <p>No purchase link available</p>
+            {% endif %}
+        </div>
+        <div class="recommendation-buttons">
+            <form method="get" action="">
+                <button type="submit" name="use_recommendation">Use Recommendation</button>
+            </form>
+        </div>
+        {% elif error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <div class="recommendation-buttons">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit">Get Recommendation</button>
+              </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
